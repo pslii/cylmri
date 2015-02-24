@@ -16,9 +16,10 @@ class DataReader:
                      'darr', 'darr', 
                      'd', 'i', 'i', 'd', 'd']
 
-    def __init__(self, grid, 
+    def __init__(self, params, grid,
                  fmtlist=FMTLIST_2DMRI, 
                  varlist=VARLIST_2DMRI):
+        self.params = params
         self.grid = grid
         self.nr = grid.nrtot/grid.nlayers_i # size of each individual data block
         self.nz = grid.nztot/grid.nlayers_j
@@ -109,15 +110,15 @@ class DataReader:
         Generator for datafile names.
         """
 
-    def files(self, suffix="dat", n_digits=4, path='.'):
+    def files(self, suffix="dat", n_digits=4, start = 0, path='.', skip=1):
         import os.path
-        fnum = 0
+        fnum = start
         formatstr = "{0:0"+str(n_digits)+"d}"+suffix
         filename = formatstr.format(fnum)
         while(os.path.isfile(path+'/'+filename)
               and fnum <= (10**n_digits-1)):
             yield self.readData(filename, path=path)
-            fnum += 1
+            fnum += skip
             filename = formatstr.format(fnum)
         
     def readData(self, fname, path='.'):
@@ -142,6 +143,6 @@ class DataReader:
         t1 = time.time()
         print " {:.2f} s".format(t1-t0)
 
-        return SimData(self.grid, data, metadata)
+        return SimData(self.params, self.grid, data, metadata)
         
 

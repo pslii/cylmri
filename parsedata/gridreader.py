@@ -5,6 +5,7 @@ class GridReader:
     """
     Reads in and parses bindary grid file for 2.5D cylindrical coordinates.
     """
+    debug = True
     
     def __init__(self, params, fname='grid', path='.'):
         self.nrtot = params['nxtot']
@@ -54,6 +55,14 @@ class GridReader:
     def _twod(self, r, z):
         r2D = r[:,np.newaxis] * np.ones(self.nztot)
         z2D = np.ones((self.nrtot,1)) * z
+        if self.debug:
+            assert(np.all(r == r2D[:,0]))
+            assert(np.all(r == r2D[:,self.nztot/2]))
+            assert(np.all(r == r2D[:,-1]))
+
+            assert(np.all(z == z2D[0,:]))
+            assert(np.all(z == z2D[self.nrtot/2,:]))
+            assert(np.all(z == z2D[-1,:]))
         return r2D, z2D
 
     def broadcast(self, r, z):
